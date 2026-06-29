@@ -1,6 +1,6 @@
 # Distributed Rate Limiter
 
-A production-grade **distributed rate limiter** using Redis, Spring Boot 3, and AOP — supporting both **Sliding Window** and **Token Bucket** algorithms. Apply rate limiting to any endpoint with a single annotation.
+A **distributed rate limiter** using Redis, Spring Boot 3, and AOP — supporting both **Sliding Window** and **Token Bucket** algorithms. Apply rate limiting to any endpoint with a single annotation.
 
 ## Algorithms Implemented
 
@@ -82,12 +82,20 @@ HTTP Request → RateLimitAspect (AOP)
              Allow / Deny + Set Headers
 ```
 
-## Interview Talking Points
+## Tests
 
-1. Why Lua scripts? → Atomic execution, no distributed locks needed
-2. Why fail-open? → Availability > strict limiting during Redis outage
-3. Sliding Window vs Token Bucket? → SW: steady traffic, TB: bursty traffic
-4. How to scale? → Redis Cluster, consistent hashing per key
+```bash
+mvn test
+```
+
+Unit tests cover the fail-open behavior when Redis is unavailable, Redis result parsing, and the AOP enforcement path (request rejected with `429` once the limit is exceeded).
+
+## Design Notes
+
+- **Why Lua scripts?** Atomic check-and-increment in Redis — no distributed locks needed.
+- **Why fail-open?** Availability is prioritized over strict limiting during a Redis outage.
+- **Sliding Window vs Token Bucket?** Sliding window suits steady traffic; token bucket suits bursty traffic.
+- **Scaling?** Redis Cluster with consistent hashing per key.
 
 ## Author
 **Muhammad Nadir** — [LinkedIn](https://linkedin.com/in/muhammad-nadir-26095646)
